@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SFTMS | Security Audit Center</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/audit.css') }}">
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+            <h2>SFTMS</h2>
+            <p>Security Console</p>
+        </div>
+
+        <ul>
+
+            <li>
+                <a href="/dashboard">
+                    🏠 Dashboard
+                </a>
+            </li>
+
+            <li class="active">
+                <a href="/audit-logs">
+                    🛡️ Audit Logs
+                </a>
+            </li>
+
+            <li>
+                <a href="/reports">
+                    📊 Reports
+                </a>
+            </li>
+
+            <li>
+                <a href="/">
+                    🚪 Home
+                </a>
+            </li>
+
+        </ul>
+
+    </aside>
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main-content">
+
+        <!-- HEADER -->
+
+        <section class="header">
+
+            <div>
+
+                <div class="eyebrow">
+                    🛡️ SECURITY EVENT MONITORING
+                </div>
+
+                <h1>
+                    Security Audit Center
+                </h1>
+
+                <p>
+                    View and monitor security events occurring
+                    inside the Secure File Transfer Monitoring System.
+                </p>
+
+            </div>
+
+            <div class="live-badge">
+                <span></span>
+                LIVE
+            </div>
+
+        </section>
+
+
+        <!-- ================= STAT CARDS ================= -->
+
+        <section class="cards">
+
+            <div class="card blue">
+
+                <div class="card-icon">
+                    📋
+                </div>
+
+                <h3>Total Events</h3>
+
+                <h1 id="totalEvents">
+                    0
+                </h1>
+
+                <p>Recorded security events</p>
+
+            </div>
+
+
+            <div class="card red">
+
+                <div class="card-icon">
+                    🚨
+                </div>
+
+                <h3>High Risk</h3>
+
+                <h1 id="highRisk">
+                    0
+                </h1>
+
+                <p>High-risk security events</p>
+
+            </div>
+
+
+            <div class="card orange">
+
+                <div class="card-icon">
+                    ✏️
+                </div>
+
+                <h3>Rename / Move</h3>
+
+                <h1 id="renameEvents">
+                    0
+                </h1>
+
+                <p>File movement events</p>
+
+            </div>
+
+
+            <div class="card green">
+
+                <div class="card-icon">
+                    🔐
+                </div>
+
+                <h3>Secure Events</h3>
+
+                <h1 id="secureEvents">
+                    0
+                </h1>
+
+                <p>Authorized activity</p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= FILTERS ================= -->
+
+        <section class="filter-box">
+
+            <input
+                type="text"
+                id="searchInput"
+                placeholder="🔎 Search file name..."
+            >
+
+            <select id="riskFilter">
+
+                <option value="ALL">
+                    All Risks
+                </option>
+
+                <option value="HIGH">
+                    High Risk
+                </option>
+
+                <option value="LOW">
+                    Low Risk
+                </option>
+
+            </select>
+
+
+            <select id="eventFilter">
+
+                <option value="ALL">
+                    All Events
+                </option>
+
+                <option value="RENAMED">
+                    Rename / Move
+                </option>
+
+                <option value="Secure">
+                    Secure
+                </option>
+
+                <option value="Threat">
+                    Threat
+                </option>
+
+            </select>
+
+        </section>
+
+
+        <!-- ================= AUDIT TABLE ================= -->
+
+        <section class="table-container">
+
+            <div class="table-header">
+
+                <div>
+                    <h2>Security Event Timeline</h2>
+
+                    <p>
+                        All monitored security activity
+                    </p>
+                </div>
+
+                <div class="live-indicator">
+                    ● Monitoring
+                </div>
+
+            </div>
+
+
+            <div class="table-scroll">
+
+                <table id="auditTable">
+
+                    <thead>
+
+                        <tr>
+
+                            <th>Event</th>
+                            <th>File</th>
+                            <th>User</th>
+                            <th>Risk</th>
+                            <th>Authorization</th>
+                            <th>Time</th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="auditBody">
+
+                        <tr>
+
+                            <td colspan="6"
+                                class="loading">
+
+                                🔄 Loading security events...
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+        <!-- ================= SECURITY NOTICE ================= -->
+
+        <section class="security-notice">
+
+            <div class="notice-icon">
+                🛡️
+            </div>
+
+            <div>
+
+                <h3>
+                    Security Monitoring Active
+                </h3>
+
+                <p>
+                    SFTMS continuously monitors file activity
+                    and records security events for auditing
+                    and investigation.
+                </p>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script>
+
+let allEvents = [];
+
+
+async function loadAuditLogs() {
+
+    try {
+
+        const response =
+            await fetch("/api/audit-logs");
+
+        if (!response.ok) {
+            return;
+        }
+
+        const data =
+            await response.json();
+
+        allEvents =
+            data.events || [];
+
+        updateStatistics();
+
+        renderEvents();
+
+    }
+
+    catch (error) {
+
+        console.log(
+            "Audit update unavailable:",
+            error
+        );
+
+    }
+
+}
+
+
+function updateStatistics() {
+
+    const total =
+        allEvents.length;
+
+    const high =
+        allEvents.filter(
+            event =>
+                String(event.risk_level)
+                    .toUpperCase() === "HIGH"
+        ).length;
+
+    const rename =
+        allEvents.filter(
+            event =>
+                String(event.event_type)
+                    .toUpperCase()
+                    .includes("RENAM")
+        ).length;
+
+    const secure =
+        allEvents.filter(
+            event =>
+                String(event.event_type)
+                    .toLowerCase() === "secure"
+        ).length;
+
+
+    document.getElementById(
+        "totalEvents"
+    ).textContent = total;
+
+
+    document.getElementById(
+        "highRisk"
+    ).textContent = high;
+
+
+    document.getElementById(
+        "renameEvents"
+    ).textContent = rename;
+
+
+    document.getElementById(
+        "secureEvents"
+    ).textContent = secure;
+
+}
+
+
+function renderEvents() {
+
+    const search =
+        document.getElementById(
+            "searchInput"
+        ).value.toLowerCase();
+
+
+    const risk =
+        document.getElementById(
+            "riskFilter"
+        ).value;
+
+
+    const eventType =
+        document.getElementById(
+            "eventFilter"
+        ).value;
+
+
+    const filtered =
+        allEvents.filter(event => {
+
+            const fileName =
+                String(
+                    event.file_name || ""
+                ).toLowerCase();
+
+
+            const eventRisk =
+                String(
+                    event.risk_level || ""
+                ).toUpperCase();
+
+
+            const type =
+                String(
+                    event.event_type || ""
+                );
+
+
+            const matchesSearch =
+                fileName.includes(search);
+
+
+            const matchesRisk =
+                risk === "ALL" ||
+                eventRisk === risk;
+
+
+            const matchesEvent =
+                eventType === "ALL" ||
+                type === eventType ||
+                (
+                    eventType === "RENAMED" &&
+                    type.toUpperCase()
+                        .includes("RENAM")
+                );
+
+
+            return (
+                matchesSearch &&
+                matchesRisk &&
+                matchesEvent
+            );
+
+        });
+
+
+    const body =
+        document.getElementById(
+            "auditBody"
+        );
+
+
+    if (!filtered.length) {
+
+        body.innerHTML = `
+            <tr>
+                <td colspan="6" class="empty">
+                    📭 No matching security events found.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    body.innerHTML =
+        filtered.map(event => {
+
+            const risk =
+                String(
+                    event.risk_level || ""
+                ).toUpperCase();
+
+
+            const eventType =
+                String(
+                    event.event_type || ""
+                );
+
+
+            const riskClass =
+                risk === "HIGH"
+                    ? "high"
+                    : "low";
+
+
+            return `
+                <tr>
+
+                    <td>
+                        <span class="event-badge">
+                            🛡️ ${eventType}
+                        </span>
+                    </td>
+
+                    <td>
+                        📄 ${event.file_name || "-"}
+                    </td>
+
+                    <td>
+                        👤 ${event.username || "-"}
+                    </td>
+
+                    <td>
+                        <span class="risk ${riskClass}">
+                            ${risk || "-"}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${event.authorization || "-"}
+                    </td>
+
+                    <td>
+                        ${event.event_time || "-"}
+                    </td>
+
+                </tr>
+            `;
+
+        }).join("");
+
+}
+
+
+document.getElementById(
+    "searchInput"
+).addEventListener(
+    "input",
+    renderEvents
+);
+
+
+document.getElementById(
+    "riskFilter"
+).addEventListener(
+    "change",
+    renderEvents
+);
+
+
+document.getElementById(
+    "eventFilter"
+).addEventListener(
+    "change",
+    renderEvents
+);
+
+
+loadAuditLogs();
+
+
+setInterval(
+    loadAuditLogs,
+    3000
+);
+
+</script>
+
+</body>
+</html>
