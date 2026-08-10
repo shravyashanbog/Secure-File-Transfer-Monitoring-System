@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SFTMS | Security Reports</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/reports.css') }}">
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <h2>SFTMS</h2>
+
+            <p>Security Console</p>
+
+        </div>
+
+
+        <ul>
+
+            <li>
+
+                <a href="/dashboard">
+                    🏠 Dashboard
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="/audit-logs">
+                    🛡️ Audit Logs
+                </a>
+
+            </li>
+
+
+            <li class="active">
+
+                <a href="/reports">
+                    📊 Reports
+                </a>
+
+            </li>
+
+
+            <li>
+
+                <a href="/">
+                    🚪 Home
+                </a>
+
+            </li>
+
+        </ul>
+
+
+        <div class="sidebar-status">
+
+            <span class="status-dot"></span>
+
+            <div>
+
+                <strong>Monitoring Active</strong>
+
+                <small>
+                    Real-time security
+                </small>
+
+            </div>
+
+        </div>
+
+    </aside>
+
+
+
+    <!-- ================= MAIN ================= -->
+
+    <main class="main-content">
+
+
+        <!-- HEADER -->
+
+        <section class="header">
+
+            <div>
+
+                <div class="eyebrow">
+                    📊 SECURITY ANALYTICS
+                </div>
+
+
+                <h1>
+                    Security Reports Dashboard
+                </h1>
+
+
+                <p>
+                    Live monitoring reports generated from
+                    the Secure File Transfer Monitoring System.
+                </p>
+
+            </div>
+
+
+            <div class="live-badge">
+
+                <span></span>
+
+                LIVE REPORTING
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= SUMMARY CARDS ================= -->
+
+        <section class="cards">
+
+
+            <div class="card blue">
+
+                <div class="card-top">
+
+                    <div>
+
+                        <h3>
+                            Total Files
+                        </h3>
+
+                        <h1 id="totalFiles">
+                            0
+                        </h1>
+
+                    </div>
+
+                    <div class="card-icon">
+                        📁
+                    </div>
+
+                </div>
+
+
+                <p>
+                    Files currently monitored
+                </p>
+
+            </div>
+
+
+
+            <div class="card green">
+
+                <div class="card-top">
+
+                    <div>
+
+                        <h3>
+                            Secure Files
+                        </h3>
+
+                        <h1 id="secureFiles">
+                            0
+                        </h1>
+
+                    </div>
+
+                    <div class="card-icon">
+                        🔐
+                    </div>
+
+                </div>
+
+
+                <p>
+                    Verified files
+                </p>
+
+            </div>
+
+
+
+            <div class="card red">
+
+                <div class="card-top">
+
+                    <div>
+
+                        <h3>
+                            Threat Files
+                        </h3>
+
+                        <h1 id="threatFiles">
+                            0
+                        </h1>
+
+                    </div>
+
+                    <div class="card-icon">
+                        🚨
+                    </div>
+
+                </div>
+
+
+                <p>
+                    Suspicious files detected
+                </p>
+
+            </div>
+
+
+
+            <div class="card orange">
+
+                <div class="card-top">
+
+                    <div>
+
+                        <h3>
+                            Storage Used
+                        </h3>
+
+                        <h1 id="storageUsed">
+                            0 KB
+                        </h1>
+
+                    </div>
+
+                    <div class="card-icon">
+                        💾
+                    </div>
+
+                </div>
+
+
+                <p>
+                    Total monitored storage
+                </p>
+
+            </div>
+
+
+        </section>
+
+
+
+        <!-- ================= DASHBOARD GRID ================= -->
+
+        <section class="dashboard-grid">
+
+
+            <!-- LEFT SIDE -->
+
+            <div class="left-content">
+
+
+                <!-- SEARCH -->
+
+                <section class="filter-box">
+
+                    <input
+                        type="text"
+                        id="searchInput"
+                        placeholder="🔎 Search File Name..."
+                    >
+
+
+                    <select id="statusFilter">
+
+                        <option value="ALL">
+                            All Status
+                        </option>
+
+                        <option value="Secure">
+                            Secure
+                        </option>
+
+                        <option value="Threat">
+                            Threat
+                        </option>
+
+                    </select>
+
+
+                    <select id="riskFilter">
+
+                        <option value="ALL">
+                            All Risk
+                        </option>
+
+                        <option value="HIGH">
+                            High Risk
+                        </option>
+
+                        <option value="LOW">
+                            Low Risk
+                        </option>
+
+                    </select>
+
+                </section>
+
+
+
+                <!-- TABLE -->
+
+                <section class="table-container">
+
+
+                    <div class="table-header">
+
+                        <div>
+
+                            <h2>
+                                File Security Report
+                            </h2>
+
+                            <p>
+                                Detailed monitoring results
+                            </p>
+
+                        </div>
+
+
+                        <div class="live-indicator">
+
+                            ● LIVE
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="table-scroll">
+
+                        <table id="reportTable">
+
+
+                            <thead>
+
+                                <tr>
+
+                                    <th>
+                                        File
+                                    </th>
+
+                                    <th>
+                                        User
+                                    </th>
+
+                                    <th>
+                                        Status
+                                    </th>
+
+                                    <th>
+                                        Integrity
+                                    </th>
+
+                                    <th>
+                                        Risk
+                                    </th>
+
+                                    <th>
+                                        Size
+                                    </th>
+
+                                    <th>
+                                        Time
+                                    </th>
+
+                                </tr>
+
+                            </thead>
+
+
+                            <tbody id="reportBody">
+
+                                <tr>
+
+                                    <td
+                                        colspan="7"
+                                        class="loading"
+                                    >
+
+                                        🔄 Loading report...
+
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+
+                        </table>
+
+                    </div>
+
+
+                </section>
+
+
+            </div>
+
+
+
+            <!-- RIGHT SIDE -->
+
+            <aside class="right-panel">
+
+
+                <!-- SUMMARY -->
+
+                <section class="summary-card">
+
+                    <h2>
+                        📋 Report Summary
+                    </h2>
+
+
+                    <div class="summary-item">
+
+                        <span>
+                            Total Files
+                        </span>
+
+                        <strong id="summaryTotal">
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <span>
+                            Secure
+                        </span>
+
+                        <strong
+                            id="summarySecure"
+                            class="green-text"
+                        >
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <span>
+                            Threats
+                        </span>
+
+                        <strong
+                            id="summaryThreat"
+                            class="red-text"
+                        >
+                            0
+                        </strong>
+
+                    </div>
+
+
+                    <div class="summary-item">
+
+                        <span>
+                            High Risk
+                        </span>
+
+                        <strong
+                            id="summaryHigh"
+                            class="orange-text"
+                        >
+                            0
+                        </strong>
+
+                    </div>
+
+                </section>
+
+
+
+                <!-- SECURITY TIPS -->
+
+                <section class="tips-card">
+
+                    <h2>
+                        🛡️ Security Instructions
+                    </h2>
+
+
+                    <ul>
+
+                        <li>
+                            ✓ Verify file integrity before sharing.
+                        </li>
+
+                        <li>
+                            ✓ Encrypt confidential documents.
+                        </li>
+
+                        <li>
+                            ✓ Monitor HIGH risk files regularly.
+                        </li>
+
+                        <li>
+                            ✓ Review audit logs for suspicious activity.
+                        </li>
+
+                        <li>
+                            ✓ Keep backup copies of critical files.
+                        </li>
+
+                    </ul>
+
+                </section>
+
+
+
+                <!-- QUICK ACTIONS -->
+
+                <section class="action-card">
+
+                    <h2>
+                        ⚡ Quick Actions
+                    </h2>
+
+
+                    <button
+                        onclick="loadReports()"
+                    >
+                        🔄 Refresh Report
+                    </button>
+
+
+                    <a
+                        href="/audit-logs"
+                        class="action-link"
+                    >
+                        🛡️ Open Audit Logs
+                    </a>
+
+
+                    <a
+                        href="/dashboard"
+                        class="action-link"
+                    >
+                        🏠 Back to Dashboard
+                    </a>
+
+                </section>
+
+
+            </aside>
+
+
+        </section>
+
+
+
+        <!-- FOOTER SECURITY BAR -->
+
+        <section class="security-footer">
+
+            <span>
+                🛡️ SFTMS Security Monitoring Active
+            </span>
+
+            <span>
+                SHA-256 Integrity • Audit Logging • Threat Detection
+            </span>
+
+        </section>
+
+
+    </main>
+
+
+</div>
+
+
+
+<!-- ================= REPORT JAVASCRIPT ================= -->
+
+<script>
+
+
+let reports = [];
+
+
+
+async function loadReports() {
+
+
+    try {
+
+
+        const response =
+            await fetch("/api/reports");
+
+
+        if (!response.ok) {
+
+            return;
+
+        }
+
+
+        const data =
+            await response.json();
+
+
+        reports =
+            data.reports || data || [];
+
+
+        updateStatistics();
+
+
+        renderReports();
+
+
+    }
+
+    catch (error) {
+
+
+        console.log(
+            "Report update unavailable:",
+            error
+        );
+
+
+    }
+
+}
+
+
+
+function updateStatistics() {
+
+
+    const total =
+        reports.length;
+
+
+    const secure =
+        reports.filter(
+            item =>
+                String(item.status)
+                    .toLowerCase() === "secure"
+        ).length;
+
+
+    const threats =
+        reports.filter(
+            item =>
+                String(item.status)
+                    .toLowerCase() === "threat"
+        ).length;
+
+
+    const high =
+        reports.filter(
+            item =>
+                String(item.risk_level)
+                    .toUpperCase() === "HIGH"
+        ).length;
+
+
+    let storage = 0;
+
+
+    reports.forEach(item => {
+
+        storage +=
+            Number(item.filesize || 0);
+
+    });
+
+
+    document.getElementById(
+        "totalFiles"
+    ).textContent = total;
+
+
+    document.getElementById(
+        "secureFiles"
+    ).textContent = secure;
+
+
+    document.getElementById(
+        "threatFiles"
+    ).textContent = threats;
+
+
+    document.getElementById(
+        "storageUsed"
+    ).textContent =
+        (storage / 1024).toFixed(1) + " KB";
+
+
+    document.getElementById(
+        "summaryTotal"
+    ).textContent = total;
+
+
+    document.getElementById(
+        "summarySecure"
+    ).textContent = secure;
+
+
+    document.getElementById(
+        "summaryThreat"
+    ).textContent = threats;
+
+
+    document.getElementById(
+        "summaryHigh"
+    ).textContent = high;
+
+}
+
+
+
+function renderReports() {
+
+
+    const search =
+        document.getElementById(
+            "searchInput"
+        ).value.toLowerCase();
+
+
+    const status =
+        document.getElementById(
+            "statusFilter"
+        ).value;
+
+
+    const risk =
+        document.getElementById(
+            "riskFilter"
+        ).value;
+
+
+    const filtered =
+        reports.filter(item => {
+
+
+            const filename =
+                String(
+                    item.filename || ""
+                ).toLowerCase();
+
+
+            const itemStatus =
+                String(
+                    item.status || ""
+                );
+
+
+            const itemRisk =
+                String(
+                    item.risk_level || ""
+                ).toUpperCase();
+
+
+            return (
+
+                filename.includes(search)
+
+                &&
+
+                (
+                    status === "ALL"
+                    ||
+                    itemStatus === status
+                )
+
+                &&
+
+                (
+                    risk === "ALL"
+                    ||
+                    itemRisk === risk
+                )
+
+            );
+
+        });
+
+
+    const body =
+        document.getElementById(
+            "reportBody"
+        );
+
+
+    if (!filtered.length) {
+
+
+        body.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="empty"
+                >
+
+                    📭 No matching files found.
+
+                </td>
+
+            </tr>
+
+        `;
+
+
+        return;
+
+    }
+
+
+
+    body.innerHTML =
+        filtered.map(item => {
+
+
+            const status =
+                String(
+                    item.status || ""
+                );
+
+
+            const integrity =
+                String(
+                    item.integrity || ""
+                );
+
+
+            const risk =
+                String(
+                    item.risk_level || ""
+                ).toUpperCase();
+
+
+            const statusClass =
+                status.toLowerCase()
+                    === "secure"
+                    ? "secure"
+                    : "threat";
+
+
+            const integrityClass =
+                integrity.toLowerCase()
+                    === "verified"
+                    ? "verified"
+                    : "failed";
+
+
+            const riskClass =
+                risk === "HIGH"
+                    ? "high"
+                    : "low";
+
+
+            return `
+
+                <tr>
+
+                    <td>
+
+                        <div class="file-name">
+
+                            📄
+
+                            <span>
+                                ${item.filename || "-"}
+                            </span>
+
+                        </div>
+
+                    </td>
+
+
+                    <td>
+                        👤 ${item.username || "-"}
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="badge ${statusClass}"
+                        >
+
+                            ${status}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="badge ${integrityClass}"
+                        >
+
+                            ${integrity}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        <span
+                            class="risk ${riskClass}"
+                        >
+
+                            ${risk || "-"}
+
+                        </span>
+
+                    </td>
+
+
+                    <td>
+
+                        ${(
+                            Number(
+                                item.filesize || 0
+                            ) / 1024
+                        ).toFixed(1)}
+
+                        KB
+
+                    </td>
+
+
+                    <td>
+
+                        ${item.upload_time || "-"}
+
+                    </td>
+
+                </tr>
+
+            `;
+
+
+        }).join("");
+
+}
+
+
+
+document.getElementById(
+    "searchInput"
+).addEventListener(
+    "input",
+    renderReports
+);
+
+
+
+document.getElementById(
+    "statusFilter"
+).addEventListener(
+    "change",
+    renderReports
+);
+
+
+
+document.getElementById(
+    "riskFilter"
+).addEventListener(
+    "change",
+    renderReports
+);
+
+
+
+loadReports();
+
+
+
+setInterval(
+    loadReports,
+    3000
+);
+
+
+</script>
+
+
+</body>
+
+</html>
